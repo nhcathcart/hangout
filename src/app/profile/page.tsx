@@ -1,17 +1,22 @@
-import Image from "next/image";
 import PaddedContainer from "../components/padded-container";
+import ProfilePicture from "./components/profile-picture";
+import ProfileTabs from "./components/profile-tabs";
+
 export default function Profile() {
   return (
     <PaddedContainer>
-      <span className="inline-block h-36 w-36 overflow-hidden rounded-full bg-gray-100">
-        <svg
-          className="h-full w-full text-gray-300"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-      </span>
+      <div className="flex flex-col w-full items-center p-8 border-[1px] border-neutral-900 rounded">
+        <div className="pictureAndNameContainer w-full flex  justify-between items-center">
+          <ProfilePicture />
+          <div className="flex grow justify-center">
+            <h2 className="text-4xl">Name goes here</h2>
+          </div>
+        </div>
+        <div className="py-12 w-full">
+          <div className="border-t border-gray-300 w-full" />
+        </div>
+        <ProfileTabs />
+      </div>
     </PaddedContainer>
   );
 }

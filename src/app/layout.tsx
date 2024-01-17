@@ -10,7 +10,7 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "bb",
+  title: "hangout",
   description: "A place to post memes, and generally bullshit around.",
 };
 

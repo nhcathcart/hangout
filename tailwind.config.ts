@@ -10,6 +10,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         heebo: ['var(--font-heebo)']
+      },
+      colors:{
+        "custom-green": "#4d8a49",
       }
     },
   },
