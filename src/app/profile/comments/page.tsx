@@ -1,7 +1,9 @@
+import PaddedContainer from "@/app/components/padded-container";
+
 export default function CommentsPage() {
   return (
-    <div>
+    <PaddedContainer>
       <h1>Comments</h1>
-    </div>
+    </PaddedContainer>
   );
 }

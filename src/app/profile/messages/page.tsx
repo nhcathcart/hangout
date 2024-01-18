@@ -1,7 +1,9 @@
+import PaddedContainer from "@/app/components/padded-container";
+
 export default function MessagesPage() {
   return (
-    <div>
+    <PaddedContainer>
       <h1>Messages</h1>
-    </div>
+    </PaddedContainer>
   );
 }

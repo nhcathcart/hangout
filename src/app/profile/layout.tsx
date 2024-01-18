@@ -17,7 +17,7 @@ export default function ProfileLayout({
           </div>
         </div>
         <div className="py-12 w-full">
-          <div className="border-t border-gray-300 w-full" />
+          <div className="border-t border-neutral-400 w-full" />
         </div>
         <ProfileTabs />
         {children}

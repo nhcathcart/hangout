@@ -1,20 +1,17 @@
-
-
-import Image from 'next/image';
-import MobileMenu from './mobile-navbar';
-import Link from 'next/link';
-import Chat from './chat-slide-over';
+import Image from "next/image";
+import MobileMenu from "./mobile-navbar";
+import Link from "next/link";
+import Chat from "./chat-slide-over";
 
 const linkArray: { linkText: string; href: string }[] = [
   {
-    linkText: 'home',
-    href: '/',
+    linkText: "home",
+    href: "/",
   },
   {
-    linkText: 'profile',
-    href: '/profile/posts',
+    linkText: "profile",
+    href: "/profile",
   },
-  
 ];
 
 export default function Navbar() {
@@ -24,23 +21,30 @@ export default function Navbar() {
         {/* Open Mobile Menu */}
         {/* Logo */}
         <div className="ml-4 flex flex-1 items-center lg:flex-initial">
-          <a href="/" className='text-3xl'>
+          <a href="/" className="text-3xl">
             hangout
           </a>
         </div>
         {/* Big Screen Links */}
-        <div className="hidden h-auto flex-1 justify-end lg:flex gap-5 mr-4">
-          {linkArray.map((link) => (
-            <Link
-              key={`sidebar-link-${link.linkText}`}
-              href={link.href}
-              className="text-2xl font-futura hover:text-neutral-400"
-            >
-              {link.linkText}
-            </Link>
-          ))}
+        <Chat />
+        <div className="hidden h-auto justify-end lg:flex gap-5 mr-4">
+          {linkArray.map((link) => {
+            if (link.linkText === "home") {
+              return null;
+            } else {
+              return (
+                <Link
+                  key={`sidebar-link-${link.linkText}`}
+                  href={link.href}
+                  className="text-xl font-futura hover:text-neutral-400"
+                >
+                  {link.linkText}
+                </Link>
+              );
+            }
+          })}
         </div>
-        <Chat/>
+
         <MobileMenu linkArray={linkArray} />
       </div>
     </nav>
