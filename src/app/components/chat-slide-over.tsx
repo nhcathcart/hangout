@@ -2,6 +2,7 @@
 import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 
 export default function Chat() {
   const [open, setOpen] = useState(false);
@@ -9,10 +10,10 @@ export default function Chat() {
   return (
     <>
       <button
-        className="flex text-2xl justify-end lg:flex gap-5 mr-4"
+        className="flex grow text-xl justify-end lg:flex gap-5 mr-4"
         onClick={() => setOpen(true)}
       >
-        chat
+        <ChatBubbleLeftRightIcon className="h-6 w-6 text-neutral-900 stroke-1" aria-hidden="true" />
       </button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={setOpen}>
@@ -21,11 +22,11 @@ export default function Chat() {
             enter="ease-in-out duration-500"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="ease-in-out duration-500"
+            leave="ease-in-out duration-300"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+            <div className="fixed inset-0 bg-neutral-900 bg-opacity-70 transition-opacity" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
@@ -33,10 +34,10 @@ export default function Chat() {
               <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
                 <Transition.Child
                   as={Fragment}
-                  enter="transform transition ease-in-out duration-500 sm:duration-700"
+                  enter="transform transition ease-in-out duration-500 sm:duration-300"
                   enterFrom="translate-x-full"
                   enterTo="translate-x-0"
-                  leave="transform transition ease-in-out duration-500 sm:duration-700"
+                  leave="transform transition ease-in-out duration-500 sm:duration-300"
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >

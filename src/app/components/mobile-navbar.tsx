@@ -16,7 +16,7 @@ export default function MobileMenu({ linkArray }: Props) {
       <div className="flex items-center lg:hidden">
         <button
           type="button"
-          className="-ml-2 rounded-md  p-2 text-white"
+          className="-ml-2 rounded-md  p-2 text-neutral-900"
           onClick={() => setOpen(true)}
         >
           <Bars3Icon className="h-8 w-8" aria-hidden="true" />
@@ -32,12 +32,12 @@ export default function MobileMenu({ linkArray }: Props) {
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
             enterFrom="opacity-0"
-            enterTo="opacity-100"
+            enterTo="opacity-70"
             leave="transition-opacity ease-linear duration-300"
-            leaveFrom="opacity-100"
+            leaveFrom="opacity-70"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-neutral-900 bg-opacity-50" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-40">
@@ -50,11 +50,11 @@ export default function MobileMenu({ linkArray }: Props) {
               leaveFrom="translate-x-0"
               leaveTo="translate-x-full"
             >
-              <Dialog.Panel className="fixed inset-0 flex flex-col overflow-y-auto bg-black pb-12 shadow-xl">
+              <Dialog.Panel className="fixed inset-0 flex flex-col overflow-y-auto bg-neutral-900 bg-opacity-70 pb-12 shadow-xl">
                 <div className="flex px-4 pb-2 pt-5">
                   <button
                     type="button"
-                    className="-m-2 inline-flex items-center justify-center rounded-md p-2 text-white focus:outline-neutral-50"
+                    className="-m-2 inline-flex items-center justify-center rounded-md p-2 text-neutral-50 focus:outline-neutral-50"
                     onClick={() => setOpen(false)}
                   >
                     <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -67,7 +67,7 @@ export default function MobileMenu({ linkArray }: Props) {
                     <Link
                       key={`sidebar-link-${link.linkText}`}
                       href={link.href}
-                      className="flex rounded p-3 text-4xl text-white font-futura font-bold"
+                      className="flex rounded p-3 text-4xl text-neutral-50"
                       onClick={() => setOpen(false)}
                     >
                       {link.linkText}
