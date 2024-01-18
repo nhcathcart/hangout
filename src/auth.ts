@@ -5,13 +5,8 @@ export const authConfig = {
   providers: [GitHub],
   secret: process.env.AUTH_SECRET,
   callbacks: {
-    // async session({ session, user }) {
-    //   session.user.id = user.id;
-    //   return session;
-    // },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = auth?.user;
-      console.log(auth);
       const paths = ["/profile"];
       const isProtected = paths.some((path) =>
         nextUrl.pathname.startsWith(path)
