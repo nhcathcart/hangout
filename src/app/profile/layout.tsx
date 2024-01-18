@@ -7,8 +7,9 @@ export default async function ProfileLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   const session = await auth();
-  console.log("session is", session)
+  
   return (
     <PaddedContainer>
       <div className="flex flex-col w-full items-center px-2 py-8 md:p-8 border-[1px] border-neutral-900 rounded">
