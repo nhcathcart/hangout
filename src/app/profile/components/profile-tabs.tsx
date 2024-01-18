@@ -58,25 +58,10 @@ export default function ProfileTabs() {
   
 
   return (
-    <div>
-      <div className="sm:hidden">
-        <label htmlFor="tabs" className="sr-only">
-          Select a tab
-        </label>
-        {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
-        <select
-          id="tabs"
-          name="tabs"
-          className="block w-full rounded-md border-gray-300"
-          defaultValue={"posts"}
-        >
-          {tabs.map((tab) => (
-            <option key={tab.name}>{tab.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="hidden sm:block">
-        <nav className="flex space-x-4" aria-label="Tabs">
+    <>
+      
+      <div className="block max-w-full overflow-auto">
+        <nav className="flex gap-1 md:gap-4" aria-label="Tabs">
           {tabs.map((tab) => (
             <Link
               key={tab.name}
@@ -92,7 +77,7 @@ export default function ProfileTabs() {
           ))}
         </nav>
       </div>
-    </div>
+    </>
   );
 }
 

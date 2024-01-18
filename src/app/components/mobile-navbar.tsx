@@ -37,7 +37,7 @@ export default function MobileMenu({ linkArray }: Props) {
             leaveFrom="opacity-70"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-neutral-900 bg-opacity-50" />
+            <div className="fixed inset-0 bg-neutral-900 bg-opacity-70" />
           </Transition.Child>
 
           <div className="fixed inset-0 z-40">
