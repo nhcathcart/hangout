@@ -1,23 +1,60 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+type Tab = {
+  name: string;
+  href: string;
+};
 
 export default function ProfileTabs() {
-  const tabs = [
-    { name: "posts", href: "/profile/posts"},
-    { name: "messages", href: "/profile/messages"},
-    { name: "comments", href: "/profile/comments"},
+    
+  const tabs: Tab[] = [
+    { name: "posts", href: "/profile" },
+    { name: "messages", href: "/profile/messages" },
+    { name: "comments", href: "/profile/comments" },
   ];
-  const initialState = {
-    posts: false,
-    messages: false,
-    comments: true,
-  };
+
+  const initialState = tabs.reduce((acc, tab) => {
+    acc[tab.name] = tab.name === "posts"; // Set "posts" as the default selected tab
+    return acc;
+  }, {} as { [key: string]: boolean });
+
+  const resetState = tabs.reduce((acc, tab) => { // Set all tabs to false
+    acc[tab.name] = false;
+    return acc;
+  }, {} as { [key: string]: boolean });
+
   const [selected, setSelected] = useState(initialState);
 
   function classNames(...classes: any) {
     return classes.filter(Boolean).join(" ");
   }
+  const pathName = usePathname();
+
+  useEffect(() => {
+    const pathNameArray = pathName.split('/');
+    const currSelect = pathNameArray[pathNameArray.length - 1];
+  
+    setSelected((prev) => {
+      if (currSelect === "profile") {
+        return {
+            ...resetState, // Reset all tabs to false
+            posts: true, // Set the posts tab to true
+        }
+      }else{
+        return {
+            ...resetState, // Reset all tabs to false
+            [currSelect]: true, // Set the current tab to true
+          };
+      } 
+      
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathName]);
+  
 
   return (
     <div>
@@ -29,7 +66,7 @@ export default function ProfileTabs() {
         <select
           id="tabs"
           name="tabs"
-          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+          className="block w-full rounded-md border-gray-300"
           defaultValue={"posts"}
         >
           {tabs.map((tab) => (
@@ -40,22 +77,22 @@ export default function ProfileTabs() {
       <div className="hidden sm:block">
         <nav className="flex space-x-4" aria-label="Tabs">
           {tabs.map((tab) => (
-            <a
+            <Link
               key={tab.name}
               href={tab.href}
               className={classNames(
-                selected[tab.name] = tab.current
-                  ? "bg-custom-green text-neutral-50"
-                  : "text-gray-500 hover:text-gray-700",
-                "rounded-md px-3 py-2 text-sm font-medium"
+                selected[tab.name] ? "bg-neutral-400 text-neutral-50" : "text-neutral-900 hover:bg-neutral-300 hover:text-neutral-950",
+                "rounded-md px-3 py-2 text-lg"
               )}
-              aria-current={tab.current ? "page" : undefined}
+              aria-current={selected[tab.name] ? "page" : undefined}
             >
               {tab.name}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>
     </div>
   );
 }
+
+

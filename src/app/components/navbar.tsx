@@ -12,7 +12,7 @@ const linkArray: { linkText: string; href: string }[] = [
   },
   {
     linkText: 'profile',
-    href: '/profile',
+    href: '/profile/posts',
   },
   
 ];
