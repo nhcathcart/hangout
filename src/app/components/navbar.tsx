@@ -2,6 +2,7 @@ import Image from "next/image";
 import MobileMenu from "./mobile-navbar";
 import Link from "next/link";
 import Chat from "./chat-slide-over";
+import PostModal from "./post-modal";
 
 const linkArray: { linkText: string; href: string }[] = [
   {
@@ -21,12 +22,15 @@ export default function Navbar() {
         {/* Open Mobile Menu */}
         {/* Logo */}
         <div className="ml-4 flex flex-1 items-center lg:flex-initial">
-          <a href="/" className="text-3xl">
+          <a href="/" className="text-3xl hover:text-neutral-400">
             hangout
           </a>
         </div>
         {/* Big Screen Links */}
-        <Chat />
+        <div className="flex grow justify-end">
+          <Chat />
+          <PostModal />
+        </div>
         <div className="hidden h-auto justify-end lg:flex gap-5 mr-4">
           {linkArray.map((link) => {
             if (link.linkText === "home") {

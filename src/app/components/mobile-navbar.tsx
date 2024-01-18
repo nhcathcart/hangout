@@ -16,10 +16,10 @@ export default function MobileMenu({ linkArray }: Props) {
       <div className="flex items-center lg:hidden">
         <button
           type="button"
-          className="-ml-2 rounded-md  p-2 text-neutral-900"
+          className="-ml-2 rounded-md  p-2 text-neutral-900 hover:text-neutral-400"
           onClick={() => setOpen(true)}
         >
-          <Bars3Icon className="h-8 w-8" aria-hidden="true" />
+          <Bars3Icon className="h-8 w-8 stroke-1" aria-hidden="true" />
         </button>
       </div>
       <Transition.Root show={open} as={Fragment}>
