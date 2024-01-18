@@ -8,12 +8,44 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function PostModal() {
+  //constants
+  const erroMessage = "Title must be at least 5 characters long";
+  const errorCSSClasses =
+    "block w-full rounded border-0 p-2 pr-10  ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm sm:leading-6";
+  const validCSSClasses =
+    "block w-full rounded border-0 p-2 pr-10 text-neutral-900 ring-1 ring-inset ring-neutral-300 sm:text-sm sm:leading-6";
+  //states
   const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [validTitle, setValidTitle] = useState(false); 
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false); // "We need this state to show the error message when the user has attempted to submit the form at least once"
+  const [link, setLink] = useState("");
+  const [text, setText] = useState("");
 
+  function isValidTitle(title: string) {
+    return title.length >= 5;
+  }
+  function handleTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setTitle(e.target.value);
+    setValidTitle(isValidTitle(e.target.value));
+  }
+  function handleLinkChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setLink(e.target.value);
+  }
+  function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setText(e.target.value);
+  }
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setOpen(false);
-    //logic to submit post
+    setHasAttemptedSubmit(true);
+    if (validTitle) {
+      alert("form validation successful");
+      //submission logic goes here.
+      setOpen(false);
+    } else {
+      alert("form validation failed");
+      return;
+    }
   }
   return (
     <>
@@ -25,11 +57,7 @@ export default function PostModal() {
       </button>
 
       <Transition.Root show={open} as={Fragment}>
-        <Dialog
-          as="div"
-          className="fixed inset-0 z-60"
-          onClose={setOpen}
-        >
+        <Dialog as="div" className="fixed inset-0 z-60" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="transition-opacity ease-linear duration-300"
@@ -66,21 +94,27 @@ export default function PostModal() {
                         type="title"
                         name="title"
                         id="title"
-                        className="block w-full rounded border-0 p-2 pr-10 text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-300 focus:ring-2 focus:ring-inset focus:ring-red-500 sm:text-sm sm:leading-6"
+                        className={!validTitle && hasAttemptedSubmit ? errorCSSClasses : validCSSClasses}
                         placeholder="Title"
                         aria-invalid="true"
                         aria-describedby="title-error"
+                        onChange={handleTitleChange}
                       />
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <ExclamationCircleIcon
-                          className="h-5 w-5 text-red-500"
-                          aria-hidden="true"
-                        />
-                      </div>
+                      {!validTitle && hasAttemptedSubmit ? (
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                          <ExclamationCircleIcon
+                            className="h-5 w-5 text-red-500"
+                            aria-hidden="true"
+                          />
+                        </div>
+                      ) : null}
                     </div>
-                    <p className="mt-2 text-sm text-red-600" id="title-error">
-                      Post must have a title
-                    </p>
+                    {!validTitle && hasAttemptedSubmit ? (
+                      <p className="mt-2 text-sm text-red-600" id="title-error">
+                        {erroMessage}
+                      </p>
+                    ) : null}
+
                     <label
                       htmlFor="link"
                       className="block text-sm leading-6 text-neutral-900"
@@ -96,6 +130,7 @@ export default function PostModal() {
                         placeholder="Your link goes here"
                         aria-invalid="true"
                         aria-describedby="title-error"
+                        onChange={handleLinkChange}
                       />
                     </div>
                     <label
@@ -111,6 +146,7 @@ export default function PostModal() {
                         id="text"
                         className="block w-full rounded  border-0 p-2 text-neutral-900 shadow-sm ring-1 ring-inset ring-neutral-300 placeholder:text-neutral-400  sm:text-sm sm:leading-6"
                         defaultValue={""}
+                        onChange={handleTextChange}
                       />
                     </div>
                     <div className="flex justify-around">
