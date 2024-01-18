@@ -6,6 +6,7 @@ import {
   PlusIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
+import { createPost } from "./actions";
 
 export default function PostModal() {
   //constants
@@ -35,12 +36,13 @@ export default function PostModal() {
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(e.target.value);
   }
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setHasAttemptedSubmit(true);
     if (validTitle) {
-      alert("form validation successful");
-      //submission logic goes here.
+      const res = await createPost(title, link, text);
+      alert("post created");
+      console.log(res);
       setOpen(false);
     } else {
       alert("form validation failed");

@@ -2,7 +2,7 @@ import Image from "next/image";
 import MobileMenu from "./mobile-navbar";
 import Link from "next/link";
 import Chat from "./chat-slide-over";
-import PostModal from "./post-modal";
+import PostModal from "./post-modal/post-modal";
 
 const linkArray: { linkText: string; href: string }[] = [
   {
