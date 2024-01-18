@@ -10,10 +10,10 @@ export default function Chat() {
   return (
     <>
       <button
-        className="flex grow text-xl justify-end lg:flex gap-5 mr-4"
+        className="flex text-xl gap-5 mr-4 text-neutral-900 hover:text-neutral-400"
         onClick={() => setOpen(true)}
       >
-        <ChatBubbleLeftRightIcon className="h-6 w-6 text-neutral-900 stroke-1" aria-hidden="true" />
+        <ChatBubbleLeftRightIcon className="h-6 w-6 stroke-1" aria-hidden="true" />
       </button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={setOpen}>

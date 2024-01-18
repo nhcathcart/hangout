@@ -9,11 +9,11 @@ export default function ProfileLayout({
 }) {
   return (
     <PaddedContainer>
-      <div className="flex flex-col w-full items-center p-8 border-[1px] border-neutral-900 rounded">
-        <div className="pictureAndNameContainer w-full flex  justify-between items-center">
+      <div className="flex flex-col w-full items-center px-2 py-8 md:p-8 border-[1px] border-neutral-900 rounded">
+        <div className="pictureAndNameContainer w-full flex flex-col md:flex-row gap-8 items center justify-between items-center">
           <ProfilePicture />
           <div className="flex grow justify-center">
-            <h2 className="text-4xl">Name goes here</h2>
+            <h2 className="text-4xl text-center">Name goes here</h2>
           </div>
         </div>
         <div className="py-12 w-full">
