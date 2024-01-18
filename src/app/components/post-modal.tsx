@@ -27,7 +27,7 @@ export default function PostModal() {
       <Transition.Root show={open} as={Fragment}>
         <Dialog
           as="div"
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-60"
           onClose={setOpen}
         >
           <Transition.Child
