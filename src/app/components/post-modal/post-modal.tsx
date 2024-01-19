@@ -2,13 +2,11 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
-  CheckIcon,
   PlusIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { createPost } from "./actions";
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+
 import { checkAuth } from "@/app/actions";
 
 export default function PostModal() {
