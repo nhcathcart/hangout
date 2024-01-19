@@ -1,5 +1,6 @@
 import { getPostById } from "@/app/actions";
 import PaddedContainer from "@/app/components/padded-container";
+import PostView from "./components/post-view";
 
 
 export default async function PostPage({
@@ -11,7 +12,7 @@ export default async function PostPage({
   const post = await getPostById(postIdNum);
   return(
     <PaddedContainer>
-      <h1>{post.title}</h1>
+      <PostView {...post}/>
     </PaddedContainer>
   )
 }
