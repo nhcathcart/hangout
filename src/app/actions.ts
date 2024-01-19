@@ -10,6 +10,7 @@ export async function checkAuth() {
 }
 //helpers and generated types, exports below
 function flattenResArray(res: PostArrayWithAuthor) {
+  //may want to generalize these but for now we will just write them as we need them.
   return res.map((post) => ({
     id: post.id,
     title: post.title,
@@ -42,6 +43,20 @@ function flattenRes(res: PostByIdWithAuthor) {
     image: res.author.image,
   };
 }
+function flattenCommentArray(res: CommentArrayWithAuthor) {
+  return res.map((comment) => ({
+    id: comment.id,
+    text: comment.text,
+    createdAt: comment.createdAt.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+    updatedAt: comment.updatedAt,
+    name: comment.author.name,
+    image: comment.author.image,
+  }));
+}
 async function posts() {
   const res = await prisma.post.findMany({
     include: {
@@ -68,13 +83,31 @@ async function postById(id: number) {
           image: true,
         },
       },
+      
+    },
+  });
+  return res;
+}
+type PostByIdWithAuthor = Prisma.PromiseReturnType<typeof postById>;
+
+async function getCommentsByPostId(postId: number) {
+  const res = await prisma.comment.findMany({
+    where: {
+      postId: postId,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
     },
   });
   return res
 }
-type PostByIdWithAuthor = Prisma.PromiseReturnType<typeof postById>;
-
-//actions that are called from the client -- these are 
+type CommentArrayWithAuthor = Prisma.PromiseReturnType<typeof getCommentsByPostId>;
+//actions that are called from the client -- these are
 export async function getAllPosts() {
   const res = await posts();
   return flattenResArray(res);
@@ -103,3 +136,23 @@ export async function getPostById(id: number) {
   const res = await postById(id);
   return flattenRes(res);
 }
+
+export async function createComment(postId: number, text: string) {
+  const session = await auth();
+  const userid = session?.user?.id;
+  if (!userid) throw new Error("Not logged in");
+  const res = await prisma.comment.create({
+    data: {
+      text: text,
+      authorId: userid,
+      postId: postId,
+    },
+  });
+  return res;
+}
+
+export async function getComments(postId: number) {
+  const res = await getCommentsByPostId(postId);
+  return flattenCommentArray(res);
+}
+export type FlatComments = Prisma.PromiseReturnType<typeof getComments>;

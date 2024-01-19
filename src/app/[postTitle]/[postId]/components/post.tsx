@@ -11,7 +11,7 @@ interface Props {
   totalComments?: number | null;
   createdAt: string;
 }
-export default function PostView({
+export default function Post({
   title,
   id,
   image,
