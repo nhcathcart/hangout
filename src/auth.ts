@@ -7,42 +7,6 @@ import authConfig from "./auth.config";
 export const { handlers, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        return { ...token, id: user.id };
-      }
-      return token;
-    },
-    session: ({ session, token }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-
-          id: token.id as string,
-        },
-      };
-    },
-
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = auth?.user;
-      console.log("auth is, ", auth);
-      const paths = ["/profile"];
-      console.log("auth is, ", auth);
-      const isProtected = paths.some((path) =>
-        nextUrl.pathname.startsWith(path)
-      );
-
-      if (isProtected && !isLoggedIn) {
-        const redirectUrl = new URL("api/auth/signin", nextUrl.origin);
-        redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
-        return Response.redirect(redirectUrl);
-      }
-
-      return true;
-    },
-  },
   ...authConfig,
 });
 

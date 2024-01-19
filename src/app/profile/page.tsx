@@ -1,9 +1,12 @@
-import PaddedContainer from "../components/padded-container";
-
-export default function Profile() {
+import { getAllPostsByUser } from "../actions";
+import PostCard from "../components/post-card";
+export default async function Profile() {
+  const posts = await getAllPostsByUser();
   return (
-    <PaddedContainer>
-      <h1>This is where the posts go</h1>
-    </PaddedContainer>
+    <>
+      {posts.map((post) => (
+        <PostCard key={post.id} {...post} />
+      ))}
+    </>
   );
 }
