@@ -1,5 +1,5 @@
 "use client";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   CheckIcon,
@@ -7,6 +7,9 @@ import {
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { createPost } from "./actions";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { checkAuth } from "@/app/actions";
 
 export default function PostModal() {
   //constants
@@ -22,6 +25,24 @@ export default function PostModal() {
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false); // "We need this state to show the error message when the user has attempted to submit the form at least once"
   const [link, setLink] = useState("");
   const [text, setText] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | "loading">("loading");
+
+  useEffect(() => {
+    const getSession = async () => {
+      const isLoggedIn = await checkAuth()
+      setIsLoggedIn(isLoggedIn);
+    };
+    getSession();
+  }, []);
+  
+  function handleClick() {
+    if (isLoggedIn === "loading") return;
+    if (isLoggedIn === false) {
+      window.location.href = "/api/auth/signin"
+    }else{
+      setOpen(true)
+    }
+  }
 
   function isValidTitle(title: string) {
     return title.length >= 5;
@@ -53,7 +74,7 @@ export default function PostModal() {
     <>
       <button
         className="flex text-xl justify-end lg:flex gap-5 mr-4 text-neutral-900 hover:text-neutral-400"
-        onClick={() => setOpen(true)}
+        onClick={() => handleClick()}
       >
         <PlusIcon className="h-6 w-6 " aria-hidden="true" />
       </button>

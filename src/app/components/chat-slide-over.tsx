@@ -1,19 +1,39 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { checkAuth } from "../actions";
 
 export default function Chat() {
   const [open, setOpen] = useState(false);
-
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | "loading">("loading");
+  useEffect(() => {
+    const getSession = async () => {
+      const isLoggedIn = await checkAuth()
+      setIsLoggedIn(isLoggedIn);
+    };
+    getSession();
+  }, []);
+  function handleClick() {
+    if (isLoggedIn === "loading") return;
+    if (isLoggedIn === false) {
+      window.location.href = "/api/auth/signin"
+    }else{
+      setOpen(true)
+    }
+  }
   return (
     <>
       <button
         className="flex text-xl gap-5 mr-4 text-neutral-900 hover:text-neutral-400"
-        onClick={() => setOpen(true)}
+        onClick={() => handleClick()}
+        disabled={isLoggedIn === "loading"}
       >
-        <ChatBubbleLeftRightIcon className="h-6 w-6 stroke-1" aria-hidden="true" />
+        <ChatBubbleLeftRightIcon
+          className="h-6 w-6 stroke-1"
+          aria-hidden="true"
+        />
       </button>
       <Transition.Root show={open} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={setOpen}>
@@ -45,7 +65,6 @@ export default function Chat() {
                     <div className="flex h-full flex-col overflow-y-scroll bg-neutral-50 py-6 shadow-xl">
                       <div className="px-4 sm:px-6">
                         <div className="flex items-start justify-end">
-                          
                           <div className="ml-3 flex h-7 items-center">
                             <button
                               type="button"

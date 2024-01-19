@@ -1,13 +1,35 @@
-import NextAuth, { NextAuthConfig } from "next-auth";
-import GitHub from "next-auth/providers/github";
+import { prisma } from "./server/db/client";
 
-export const authConfig = {
-  providers: [GitHub],
-  secret: process.env.AUTH_SECRET,
+import NextAuth from "next-auth";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import authConfig from "./auth.config";
+
+export const { handlers, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" },
   callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        return { ...token, id: user.id };
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+
+          id: token.id as string,
+        },
+      };
+    },
+
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = auth?.user;
+      console.log("auth is, ", auth);
       const paths = ["/profile"];
+      console.log("auth is, ", auth);
       const isProtected = paths.some((path) =>
         nextUrl.pathname.startsWith(path)
       );
@@ -15,12 +37,47 @@ export const authConfig = {
       if (isProtected && !isLoggedIn) {
         const redirectUrl = new URL("api/auth/signin", nextUrl.origin);
         redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
-        return Response.redirect(redirectUrl); 
+        return Response.redirect(redirectUrl);
       }
 
       return true;
     },
   },
-} satisfies NextAuthConfig;
+  ...authConfig,
+});
 
-export const { handlers, auth, signOut } = NextAuth(authConfig);
+// export const authConfig = {
+//   adapter: PrismaAdapter(prisma),
+//   providers: [GitHub],
+//   secret: process.env.AUTH_SECRET,
+//   session: {
+//     strategy: "jwt",
+//   },
+//   callbacks: {
+//     jwt({ token, account, user }) {
+//       if (account) {
+//         token.accessToken = account.access_token
+//         token.id = user?.id
+//       }
+//       return token
+//     },
+//     authorized({ auth, request: { nextUrl } }) {
+//       const isLoggedIn = auth?.user;
+//       const paths = ["/profile"];
+//       console.log("auth is, ", auth)
+//       const isProtected = paths.some((path) =>
+//         nextUrl.pathname.startsWith(path)
+//       );
+
+//       if (isProtected && !isLoggedIn) {
+//         const redirectUrl = new URL("api/auth/signin", nextUrl.origin);
+//         redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
+//         return Response.redirect(redirectUrl);
+//       }
+
+//       return true;
+//     },
+//   },
+// } satisfies NextAuthConfig;
+
+// export const { handlers, auth, signOut } = NextAuth(authConfig);
