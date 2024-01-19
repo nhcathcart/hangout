@@ -2,8 +2,11 @@ import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
 import ScrollWrapper from "./scroll-wrapper";
 import Image from "next/image";
 import ProfilePicture from "../profile/components/profile-picture";
+import Link from "next/link";
+import { dashify } from "@/utils/formaters";
 interface Props {
   title: string;
+  id: number;
   image?: string | null;
   name?: string | null;
   link?: string | null;
@@ -12,6 +15,7 @@ interface Props {
   createdAt: string;
 }
 export default function PostCard({
+  id,
   title,
   link,
   text,
@@ -24,9 +28,11 @@ export default function PostCard({
     <ScrollWrapper>
       <div className="bg-neutral-50 overflow-hidden border-[1px] border-neutral-900 border-opacity-40 mb-4 rounded-sm">
         <div className="flex flex-col gap-4 px-4 pt-5 pb-3">
-          <h1 className="line-clamp-1 text-2xl font-extralight">{title}</h1>
+          <Link href={`/${dashify(title)}/${id}`}>
+            <h1 className="line-clamp-1 text-2xl font-extralight">{title}</h1>
+          </Link>
           <div className="flex w-full justify-start items-center gap-2">
-            <ProfilePicture size={38} image={image} priority={false}/>
+            <ProfilePicture size={38} image={image} priority={false} />
             <div className="flex flex-col">
               <span className="text-base">{name}</span>
               <span className="text-xs">{createdAt}</span>

@@ -8,7 +8,8 @@ export async function checkAuth() {
   if (session?.user) return true;
   return false;
 }
-function flattenRes(res: PostsWithAuthor) {
+//helpers and generated types, exports below
+function flattenResArray(res: PostArrayWithAuthor) {
   return res.map((post) => ({
     id: post.id,
     title: post.title,
@@ -24,8 +25,42 @@ function flattenRes(res: PostsWithAuthor) {
     image: post.author.image,
   }));
 }
-async function getPosts(){
+function flattenRes(res: PostByIdWithAuthor) {
+  if (!res) throw new Error("Post not found");
+  return {
+    id: res.id,
+    title: res.title,
+    link: res.link,
+    text: res.text,
+    createdAt: res.createdAt.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+    updatedAt: res.updatedAt,
+    name: res.author.name,
+    image: res.author.image,
+  };
+}
+async function posts() {
   const res = await prisma.post.findMany({
+    include: {
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+  return res;
+}
+type PostArrayWithAuthor = Prisma.PromiseReturnType<typeof posts>;
+async function postById(id: number) {
+  const res = await prisma.post.findUnique({
+    where: {
+      id: id,
+    },
     include: {
       author: {
         select: {
@@ -37,20 +72,12 @@ async function getPosts(){
   });
   return res
 }
-type PostsWithAuthor = Prisma.PromiseReturnType<typeof getPosts>
+type PostByIdWithAuthor = Prisma.PromiseReturnType<typeof postById>;
 
+//actions that are called from the client -- these are 
 export async function getAllPosts() {
-  const res = await prisma.post.findMany({
-    include: {
-      author: {
-        select: {
-          name: true,
-          image: true,
-        },
-      },
-    },
-  });
-  return flattenRes(res);
+  const res = await posts();
+  return flattenResArray(res);
 }
 
 export async function getAllPostsByUser() {
@@ -69,5 +96,10 @@ export async function getAllPostsByUser() {
       },
     },
   });
+  return flattenResArray(res);
+}
+
+export async function getPostById(id: number) {
+  const res = await postById(id);
   return flattenRes(res);
 }
