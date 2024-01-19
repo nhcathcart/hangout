@@ -18,7 +18,7 @@ const linkArray: { linkText: string; href: string }[] = [
 export default async function Navbar() {
   
   return (
-    <nav className="fixed top-0 w-full text-neutral-950 bg-neutral-200 z-40 opacity-90 border-b-[1px] border-neutral-900">
+    <nav className="fixed top-0 w-full text-neutral-950 bg-neutral-200 z-40 opacity-90 border-b-[1px] border-opacity-40 border-neutral-900">
       <div className="min-h-[10vh] max-h-[10vh] flex items-center justify-end">
         {/* Open Mobile Menu */}
         {/* Logo */}
