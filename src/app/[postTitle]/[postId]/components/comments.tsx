@@ -8,6 +8,7 @@ import { getComments } from "@/app/actions";
 import { FlatComments } from "@/app/actions";
 import Image from "next/image";
 import Profile from "@/app/profile/page";
+import { User } from "prisma/prisma-client"
 interface Props {
   postId: number;
   username?: string | null;
@@ -33,6 +34,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
       setCommentArray(comments);
     };
     getCommentsArray();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentCount]);
 
   return (

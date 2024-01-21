@@ -60,9 +60,8 @@ export default function PostModal() {
     setHasAttemptedSubmit(true);
     if (validTitle) {
       const res = await createPost(title, link, text);
-      alert("post created");
-      console.log(res);
       setOpen(false);
+      window.location.reload()
     } else {
       alert("form validation failed");
       return;
@@ -147,7 +146,7 @@ export default function PostModal() {
                         type="link"
                         name="link"
                         id="link"
-                        className="block bg-neutral-50 w-full rounded border p-2 pr-10 text-neutral-900 border border-neutral-900 border-opacity-40 sm:text-sm sm:leading-6"
+                        className="block bg-neutral-50 w-full rounded p-2 pr-10 text-neutral-900 border border-neutral-900 border-opacity-40 sm:text-sm sm:leading-6"
                         placeholder="Your link goes here"
                         aria-invalid="true"
                         aria-describedby="title-error"
@@ -165,7 +164,7 @@ export default function PostModal() {
                         rows={4}
                         name="text"
                         id="text"
-                        className="block bg-neutral-50 w-full rounded border p-2 pr-10 text-neutral-900 border border-neutral-900 border-opacity-40 sm:text-sm sm:leading-6"
+                        className="block bg-neutral-50 w-full rounded p-2 pr-10 text-neutral-900 border border-neutral-900 border-opacity-40 sm:text-sm sm:leading-6"
                         defaultValue={""}
                         onChange={handleTextChange}
                       />
