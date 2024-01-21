@@ -6,9 +6,8 @@ import { useEffect, useState } from "react";
 import { createComment } from "@/app/actions";
 import { getComments } from "@/app/actions";
 import { FlatComments } from "@/app/actions";
-import Image from "next/image";
-import Profile from "@/app/profile/page";
-import { User } from "prisma/prisma-client"
+import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
+
 interface Props {
   postId: number;
   username?: string | null;
@@ -34,7 +33,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
       setCommentArray(comments);
     };
     getCommentsArray();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentCount]);
 
   return (
@@ -108,26 +107,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
               {commentArray.map((comment, index) => {
                 console.log(comment);
                 return (
-                  <>
-                    <ScrollWrapper
-                      classNames="flex flex-col gap-4 p-4"
-                      key={comment.id}
-                    >
-                      <div className="flex gap-2 items-center">
-                        <ProfilePicture
-                          priority={false}
-                          image={comment.image}
-                          size={30}
-                        />
-                        <span className="text-xs">{comment.name}</span>
-                      </div>
-                      <p className="pl-[38px]">{comment.text}</p>
-                    
-                    {index !== commentArray.length - 1 ? (
-                      <div className="border-b w-[calc(100%-76px)] border-neutral-900 border-opacity-20 self-center" />
-                    ) : null}
-                    </ScrollWrapper>
-                  </>
+                  <Comment key={comment.id} {...comment}/>
                 );
               })}
             </div>
@@ -135,5 +115,42 @@ export default function Comments({ postId, username, userAvatar }: Props) {
         </div>
       </ScrollWrapper>
     </>
+  );
+}
+
+interface CommentProps {
+  id: number;
+  text: string;
+  createdAt: string;
+  updatedAt: Date;
+  name: string | null;
+  image: string | null;
+  
+}
+function Comment({
+  id,
+  text,
+  createdAt,
+  updatedAt,
+  name,
+  image,
+  
+}: CommentProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <ScrollWrapper classNames="flex flex-col gap-4 p-4" key={id}>
+      <div className="flex gap-2 items-center">
+        <ProfilePicture priority={false} image={image} size={30} />
+        <span className="text-xs">{name}</span>
+      </div>
+      <div className="pl-[38px] w-full flex flex-col gap-2">
+        <p>{text}</p>
+        <button className="flex gap-1 text-xs self-start"><ChatBubbleBottomCenterTextIcon className="h-4 w-4 stroke-1"/>Reply</button>
+      </div>
+
+      {/* {!isLast ? (
+        <div className="border-b w-[calc(100%-76px)] border-neutral-900 border-opacity-20 self-center" />
+      ) : null} */}
+    </ScrollWrapper>
   );
 }
