@@ -71,12 +71,15 @@ model Post {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
-  text      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
+  id            Int       @id @default(autoincrement())
+  text          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  author        User      @relation(fields: [authorId], references: [id])
+  authorId      String
+  post          Post      @relation(fields: [postId], references: [id])
+  postId        Int
+  parent        Comment?  @relation("ChildComments", fields: [parentId], references: [id])
+  parentId      Int?
+  childComments Comment[] @relation("ChildComments")
 }

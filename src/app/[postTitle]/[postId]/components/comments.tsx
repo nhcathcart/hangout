@@ -3,11 +3,11 @@ import ScrollWrapper from "@/app/components/scroll-wrapper";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import ProfilePicture from "@/app/profile/components/profile-picture";
 import { useEffect, useState } from "react";
-import { createComment } from "@/app/actions";
+import { createComment, createReply, getCommentsRecursive, NestedComment } from "@/app/actions";
 import { getComments } from "@/app/actions";
 import { FlatComments } from "@/app/actions";
-import Image from "next/image";
-import Profile from "@/app/profile/page";
+import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
+
 interface Props {
   postId: number;
   username?: string | null;
@@ -15,7 +15,7 @@ interface Props {
 }
 export default function Comments({ postId, username, userAvatar }: Props) {
   const [comment, setComment] = useState("");
-  const [commentArray, setCommentArray] = useState<FlatComments>([]);
+  const [commentArray, setCommentArray] = useState<NestedComment[]>([]);
   const [commentCount, setCommentCount] = useState<number>(0);
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -24,22 +24,27 @@ export default function Comments({ postId, username, userAvatar }: Props) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     createComment(postId, comment);
-    setCommentCount((prev) => prev + 1);
+    incrementCommentCount()
     setComment("");
+  }
+  function incrementCommentCount() {
+    setCommentCount((prev) => prev + 1);
   }
   useEffect(() => {
     const getCommentsArray = async () => {
-      const comments = await getComments(postId);
+      // const comments = await getComments(postId);
+      const comments = await getCommentsRecursive(postId);
       setCommentArray(comments);
     };
     getCommentsArray();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentCount]);
 
   return (
     <>
       <ScrollWrapper>
         <div className="bg-neutral-50 overflow-hidden border-[1px] border-neutral-900 border-opacity-40 mb-4 rounded-sm w-full">
-          <div className="flex flex-col gap-4 px-4 py-5">
+          <div className="flex flex-col gap-4 px-4 py-5 w-full">
             <div className="flex items-start space-x-4">
               <div className="min-w-0 flex-1">
                 <form onSubmit={handleSubmit} className="relative">
@@ -102,30 +107,18 @@ export default function Comments({ postId, username, userAvatar }: Props) {
               </div>
             </div>
             {/* consider making this another component for readability */}
-            <div className="flex flex-col p-2 gap-4">
+            <div className="flex flex-col p-2 gap-4 w-full">
               {commentArray.map((comment, index) => {
                 console.log(comment);
                 return (
-                  <>
-                    <ScrollWrapper
-                      classNames="flex flex-col gap-4 p-4"
-                      key={comment.id}
-                    >
-                      <div className="flex gap-2 items-center">
-                        <ProfilePicture
-                          priority={false}
-                          image={comment.image}
-                          size={30}
-                        />
-                        <span className="text-xs">{comment.name}</span>
-                      </div>
-                      <p className="pl-[38px]">{comment.text}</p>
-                    
-                    {index !== commentArray.length - 1 ? (
-                      <div className="border-b w-[calc(100%-76px)] border-neutral-900 border-opacity-20 self-center" />
-                    ) : null}
-                    </ScrollWrapper>
-                  </>
+                  <Comment
+                    key={comment.id}
+                    {...comment}
+                    userAvatar={userAvatar}
+                    username={username}
+                    postId={postId}
+                    incrementCommentCount={incrementCommentCount}
+                  />
                 );
               })}
             </div>
@@ -133,5 +126,135 @@ export default function Comments({ postId, username, userAvatar }: Props) {
         </div>
       </ScrollWrapper>
     </>
+  );
+}
+
+interface CommentProps {
+  id: number;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string | null;
+  image: string | null;
+  userAvatar?: string | null;
+  username?: string | null;
+  postId: number;
+  isChild?: boolean
+  replies?: CommentProps[];
+  incrementCommentCount?: () => void; //this requires revisiting. not sure why it must be optional
+}
+function Comment({
+  id,
+  text,
+  createdAt,
+  updatedAt,
+  name,
+  image, //the image of the user who made the comment
+  userAvatar, //the image of the user who is logged in
+  username,
+  postId,
+  replies,
+  isChild,
+  incrementCommentCount
+}: CommentProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [comment, setComment] = useState("");
+
+  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setComment(e.target.value);
+  }
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    createReply(postId, comment, id);
+    incrementCommentCount!();
+    setComment("");
+    setIsOpen(false)
+  }
+  return (
+    <ScrollWrapper classNames="flex flex-col gap-4 p-3 pr-0 w-full " key={id}>
+      <div className="flex gap-2 items-center">
+        <ProfilePicture priority={false} image={image} size={30} />
+        <span className="text-xs">{name}</span>
+      </div>
+      <div className="w-full pl-[14px]">
+      <div className="pl-[19px] w-full flex flex-col gap-2 border-l border-b pb-[19px] mb-2 border-neutral-900 border-opacity-10 rounded-bl-md mr-8 ">
+        <p>{text}</p>
+        <button
+          className="flex gap-1 text-xs self-start"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <ChatBubbleBottomCenterTextIcon className="h-4 w-4 stroke-1" />
+          Reply
+        </button>
+        {isOpen ? (
+          <form onSubmit={handleSubmit} className="relative">
+            <div className="rounded-sm shadow-sm border border-neutral-900 border-opacity-40">
+              <div className="flex gap-2 items-center flex-shrink-0 m-4">
+                <ProfilePicture priority={false} image={userAvatar} size={30} />
+                <span>{username}</span>
+              </div>
+              <label htmlFor="comment" className="sr-only">
+                Add your comment
+              </label>
+              <textarea
+                rows={3}
+                name="comment"
+                id="comment"
+                className="block w-full h-48 resize-none border-0 bg-transparent px-4 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none sm:text-sm sm:leading-6"
+                placeholder="Add your comment..."
+                value={comment}
+                onChange={handleChange}
+              />
+
+              {/* Spacer element to match the height of the toolbar */}
+              <div className="py-2" aria-hidden="true">
+                {/* Matches height of button in toolbar (1px border + 36px content height) */}
+                <div className="py-px">
+                  <div className="h-9" />
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+              <div className="flex items-center space-x-5">
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    className="-m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-500"
+                  >
+                    <PaperClipIcon className="h-5 w-5" aria-hidden="true" />
+                    <span className="sr-only">Attach a file</span>
+                  </button>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  type="submit"
+                  className="bg-neutral-200 hover:bg-neutral-300 rounded px-3 py-2 text-lg"
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+          </form>
+        ) : null}
+        {replies
+          ? replies.map((reply) => (
+              <Comment
+                key={reply.id}
+                {...reply}
+                userAvatar={userAvatar}
+                username={username}
+                postId={postId}
+                incrementCommentCount={incrementCommentCount}
+              />
+            ))
+          : null}
+      </div>
+      </div>
+      {/* {!isLast ? (
+        <div className="border-b w-[calc(100%-76px)] border-neutral-900 border-opacity-20 self-center" />
+      ) : null} */}
+    </ScrollWrapper>
   );
 }
