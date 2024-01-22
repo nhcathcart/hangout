@@ -3,7 +3,7 @@ import ScrollWrapper from "@/app/components/scroll-wrapper";
 import { PaperClipIcon } from "@heroicons/react/24/outline";
 import ProfilePicture from "@/app/profile/components/profile-picture";
 import { useEffect, useState } from "react";
-import { createComment } from "@/app/actions";
+import { createComment, createReply, getCommentsRecursive, NestedComment } from "@/app/actions";
 import { getComments } from "@/app/actions";
 import { FlatComments } from "@/app/actions";
 import { ChatBubbleBottomCenterTextIcon } from "@heroicons/react/24/outline";
@@ -15,7 +15,7 @@ interface Props {
 }
 export default function Comments({ postId, username, userAvatar }: Props) {
   const [comment, setComment] = useState("");
-  const [commentArray, setCommentArray] = useState<FlatComments>([]);
+  const [commentArray, setCommentArray] = useState<NestedComment[]>([]);
   const [commentCount, setCommentCount] = useState<number>(0);
 
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -29,7 +29,8 @@ export default function Comments({ postId, username, userAvatar }: Props) {
   }
   useEffect(() => {
     const getCommentsArray = async () => {
-      const comments = await getComments(postId);
+      // const comments = await getComments(postId);
+      const comments = await getCommentsRecursive(postId);
       setCommentArray(comments);
     };
     getCommentsArray();
@@ -107,7 +108,13 @@ export default function Comments({ postId, username, userAvatar }: Props) {
               {commentArray.map((comment, index) => {
                 console.log(comment);
                 return (
-                  <Comment key={comment.id} {...comment}/>
+                  <Comment
+                    key={comment.id}
+                    {...comment}
+                    userAvatar={userAvatar}
+                    username={username}
+                    postId={postId}
+                  />
                 );
               })}
             </div>
@@ -122,10 +129,14 @@ interface CommentProps {
   id: number;
   text: string;
   createdAt: string;
-  updatedAt: Date;
+  updatedAt: string;
   name: string | null;
   image: string | null;
-  
+  userAvatar?: string | null;
+  username?: string | null;
+  postId: number;
+  isChild?: boolean
+  replies?: CommentProps[];
 }
 function Comment({
   id,
@@ -133,10 +144,24 @@ function Comment({
   createdAt,
   updatedAt,
   name,
-  image,
-  
+  image, //the image of the user who made the comment
+  userAvatar, //the image of the user who is logged in
+  username,
+  postId,
+  replies,
+  isChild
 }: CommentProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [comment, setComment] = useState("");
+
+  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setComment(e.target.value);
+  }
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    createReply(postId, comment, id);
+    setComment("");
+  }
   return (
     <ScrollWrapper classNames="flex flex-col gap-4 p-4" key={id}>
       <div className="flex gap-2 items-center">
@@ -145,7 +170,76 @@ function Comment({
       </div>
       <div className="pl-[38px] w-full flex flex-col gap-2">
         <p>{text}</p>
-        <button className="flex gap-1 text-xs self-start"><ChatBubbleBottomCenterTextIcon className="h-4 w-4 stroke-1"/>Reply</button>
+        <button
+          className="flex gap-1 text-xs self-start"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <ChatBubbleBottomCenterTextIcon className="h-4 w-4 stroke-1" />
+          Reply
+        </button>
+        {isOpen ? (
+          <form onSubmit={handleSubmit} className="relative">
+            <div className="overflow-hidden rounded-sm shadow-sm border border-neutral-900 border-opacity-40">
+              <div className="flex gap-2 items-center flex-shrink-0 m-4">
+                <ProfilePicture priority={false} image={userAvatar} size={30} />
+                <span>{username}</span>
+              </div>
+              <label htmlFor="comment" className="sr-only">
+                Add your comment
+              </label>
+              <textarea
+                rows={3}
+                name="comment"
+                id="comment"
+                className="block w-full h-48 resize-none border-0 bg-transparent px-4 py-2 text-neutral-900 placeholder:text-neutral-400 focus:outline-none sm:text-sm sm:leading-6"
+                placeholder="Add your comment..."
+                value={comment}
+                onChange={handleChange}
+              />
+
+              {/* Spacer element to match the height of the toolbar */}
+              <div className="py-2" aria-hidden="true">
+                {/* Matches height of button in toolbar (1px border + 36px content height) */}
+                <div className="py-px">
+                  <div className="h-9" />
+                </div>
+              </div>
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 flex justify-between py-2 pl-3 pr-2">
+              <div className="flex items-center space-x-5">
+                <div className="flex items-center">
+                  <button
+                    type="button"
+                    className="-m-2.5 flex h-10 w-10 items-center justify-center rounded-full text-neutral-400 hover:text-neutral-500"
+                  >
+                    <PaperClipIcon className="h-5 w-5" aria-hidden="true" />
+                    <span className="sr-only">Attach a file</span>
+                  </button>
+                </div>
+              </div>
+              <div className="flex-shrink-0">
+                <button
+                  type="submit"
+                  className="bg-neutral-200 hover:bg-neutral-300 rounded px-3 py-2 text-lg"
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+          </form>
+        ) : null}
+        {replies
+          ? replies.map((reply) => (
+              <Comment
+                key={reply.id}
+                {...reply}
+                userAvatar={userAvatar}
+                username={username}
+                postId={postId}
+              />
+            ))
+          : null}
       </div>
 
       {/* {!isLast ? (
