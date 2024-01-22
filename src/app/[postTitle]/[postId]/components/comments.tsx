@@ -44,7 +44,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
     <>
       <ScrollWrapper>
         <div className="bg-neutral-50 overflow-hidden border-[1px] border-neutral-900 border-opacity-40 mb-4 rounded-sm w-full">
-          <div className="flex flex-col gap-4 px-4 py-5">
+          <div className="flex flex-col gap-4 px-4 py-5 w-full">
             <div className="flex items-start space-x-4">
               <div className="min-w-0 flex-1">
                 <form onSubmit={handleSubmit} className="relative">
@@ -171,12 +171,13 @@ function Comment({
     setIsOpen(false)
   }
   return (
-    <ScrollWrapper classNames="flex flex-col gap-4 p-4 w-full " key={id}>
+    <ScrollWrapper classNames="flex flex-col gap-4 p-3 pr-0 w-full " key={id}>
       <div className="flex gap-2 items-center">
         <ProfilePicture priority={false} image={image} size={30} />
         <span className="text-xs">{name}</span>
       </div>
-      <div className="ml-[14px] pl-[19px] w-full flex flex-col gap-2 border-l border-b pb-[19px] mb-2 border-neutral-900 border-opacity-10 rounded-bl-md mr-8">
+      <div className="w-full pl-[14px]">
+      <div className="pl-[19px] w-full flex flex-col gap-2 border-l border-b pb-[19px] mb-2 border-neutral-900 border-opacity-10 rounded-bl-md mr-8 ">
         <p>{text}</p>
         <button
           className="flex gap-1 text-xs self-start"
@@ -250,7 +251,7 @@ function Comment({
             ))
           : null}
       </div>
-
+      </div>
       {/* {!isLast ? (
         <div className="border-b w-[calc(100%-76px)] border-neutral-900 border-opacity-20 self-center" />
       ) : null} */}
