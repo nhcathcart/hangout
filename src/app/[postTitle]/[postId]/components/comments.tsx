@@ -24,8 +24,11 @@ export default function Comments({ postId, username, userAvatar }: Props) {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     createComment(postId, comment);
-    setCommentCount((prev) => prev + 1);
+    incrementCommentCount()
     setComment("");
+  }
+  function incrementCommentCount() {
+    setCommentCount((prev) => prev + 1);
   }
   useEffect(() => {
     const getCommentsArray = async () => {
@@ -104,7 +107,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
               </div>
             </div>
             {/* consider making this another component for readability */}
-            <div className="flex flex-col p-2 gap-4">
+            <div className="flex flex-col p-2 gap-4 w-full">
               {commentArray.map((comment, index) => {
                 console.log(comment);
                 return (
@@ -114,6 +117,7 @@ export default function Comments({ postId, username, userAvatar }: Props) {
                     userAvatar={userAvatar}
                     username={username}
                     postId={postId}
+                    incrementCommentCount={incrementCommentCount}
                   />
                 );
               })}
@@ -137,6 +141,7 @@ interface CommentProps {
   postId: number;
   isChild?: boolean
   replies?: CommentProps[];
+  incrementCommentCount?: () => void; //this requires revisiting. not sure why it must be optional
 }
 function Comment({
   id,
@@ -149,7 +154,8 @@ function Comment({
   username,
   postId,
   replies,
-  isChild
+  isChild,
+  incrementCommentCount
 }: CommentProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [comment, setComment] = useState("");
@@ -160,15 +166,17 @@ function Comment({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     createReply(postId, comment, id);
+    incrementCommentCount!();
     setComment("");
+    setIsOpen(false)
   }
   return (
-    <ScrollWrapper classNames="flex flex-col gap-4 p-4" key={id}>
+    <ScrollWrapper classNames="flex flex-col gap-4 p-4 w-full " key={id}>
       <div className="flex gap-2 items-center">
         <ProfilePicture priority={false} image={image} size={30} />
         <span className="text-xs">{name}</span>
       </div>
-      <div className="pl-[38px] w-full flex flex-col gap-2">
+      <div className="ml-[14px] pl-[19px] w-full flex flex-col gap-2 border-l border-b pb-[19px] mb-2 border-neutral-900 border-opacity-10 rounded-bl-md mr-8">
         <p>{text}</p>
         <button
           className="flex gap-1 text-xs self-start"
@@ -179,7 +187,7 @@ function Comment({
         </button>
         {isOpen ? (
           <form onSubmit={handleSubmit} className="relative">
-            <div className="overflow-hidden rounded-sm shadow-sm border border-neutral-900 border-opacity-40">
+            <div className="rounded-sm shadow-sm border border-neutral-900 border-opacity-40">
               <div className="flex gap-2 items-center flex-shrink-0 m-4">
                 <ProfilePicture priority={false} image={userAvatar} size={30} />
                 <span>{username}</span>
@@ -237,6 +245,7 @@ function Comment({
                 userAvatar={userAvatar}
                 username={username}
                 postId={postId}
+                incrementCommentCount={incrementCommentCount}
               />
             ))
           : null}
