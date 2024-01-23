@@ -20,10 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${heebo.variable} `}>
+    <html lang="en" className={`${heebo.variable} scroll-smooth`}>
       <body className="xl:items-center xl:flex-col w-full font-heebo font-thin text-neutral-900 bg-neutral-50">
         <Navbar />
-        <div className="w-full max-w-[1920px] mt-[10vh]">{children}</div>
+        <div className="w-full max-w-[1920px] mt-[75px]">{children}</div>
       </body>
     </html>
   );

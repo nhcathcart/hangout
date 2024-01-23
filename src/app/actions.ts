@@ -247,8 +247,9 @@ export interface NestedComment {
   replies: NestedComment[];
 }
 
-
-export async function getCommentsRecursive(postId: number): Promise<NestedComment[]> {
+export async function getCommentsRecursive(
+  postId: number
+): Promise<NestedComment[]> {
   const flatComments = await prisma.$queryRaw<CommentResult[]>`
     WITH RECURSIVE CommentTree AS (
       SELECT
@@ -315,8 +316,31 @@ export async function getCommentsRecursive(postId: number): Promise<NestedCommen
       }
     }
   });
-
-  console.log("nestedComments is : ");
-  console.dir(nestedComments, { depth: null });
   return nestedComments;
 }
+
+export async function getCommentsByUserId() {
+  const session = await auth();
+  const userid = session?.user?.id;
+  if (!userid) throw new Error("Not logged in");
+  const res = await prisma.comment.findMany({
+    where: {
+      authorId: userid,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+      post: {
+        select: {
+          title: true,
+        },
+      }
+    },
+  });
+  return res
+}
+export type UserCommentswithAuthor = Prisma.PromiseReturnType<typeof getCommentsByUserId>;
