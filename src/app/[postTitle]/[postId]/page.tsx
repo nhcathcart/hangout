@@ -14,7 +14,6 @@ export default async function PostPage({
   const postIdNum = Number(params.postId)
   const post = await getPostById(postIdNum);
   const session = await auth();
-  console.log(session)
   return(
     <PaddedContainer>
       <Post {...post}/>
