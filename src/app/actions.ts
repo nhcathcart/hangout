@@ -147,6 +147,51 @@ async function getCommentsByPostId(postId: number) {
 type CommentArrayWithAuthor = Prisma.PromiseReturnType<
   typeof getCommentsByPostId
 >;
+function flattenCommentsByUserArray(res: UserCommentswithAuthor) {
+  return res.map((comment) => ({
+    id: comment.id,
+    postId: comment.postId,
+    title: comment.post.title,
+    text: comment.text,
+    createdAt: comment.createdAt.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+    updatedAt: comment.createdAt.toLocaleDateString("en-US", {
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit",
+    }),
+    name: comment.author.name,
+    image: comment.author.image,
+  }));
+}
+async function commentsByUserId() {
+  const session = await auth();
+  const userid = session?.user?.id;
+  if (!userid) throw new Error("Not logged in");
+  const res = await prisma.comment.findMany({
+    where: {
+      authorId: userid,
+    },
+    include: {
+      author: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+      post: {
+        select: {
+          title: true,
+        },
+      }
+    },
+  });
+  return res
+}
+type UserCommentswithAuthor = Prisma.PromiseReturnType<typeof commentsByUserId>;
 //actions that are called from the client -- these are
 export async function getAllPosts() {
   const res = await posts();
@@ -318,29 +363,8 @@ export async function getCommentsRecursive(
   });
   return nestedComments;
 }
-
-export async function getCommentsByUserId() {
-  const session = await auth();
-  const userid = session?.user?.id;
-  if (!userid) throw new Error("Not logged in");
-  const res = await prisma.comment.findMany({
-    where: {
-      authorId: userid,
-    },
-    include: {
-      author: {
-        select: {
-          name: true,
-          image: true,
-        },
-      },
-      post: {
-        select: {
-          title: true,
-        },
-      }
-    },
-  });
-  return res
+export async function getCommentsByUserId(){
+  const res = await commentsByUserId()
+  return flattenCommentsByUserArray(res)
 }
-export type UserCommentswithAuthor = Prisma.PromiseReturnType<typeof getCommentsByUserId>;
+export type CommentArrayByUserId = Prisma.PromiseReturnType<typeof getCommentsByUserId>

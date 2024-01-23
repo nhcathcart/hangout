@@ -1,6 +1,7 @@
 import { getCommentsByUserId } from "@/app/actions";
 import { dashify } from "@/utils/formaters";
 import Link from "next/link";
+import UserComment from "./components/user-comment";
 
 export default async function CommentsPage() {
   const userComments = await getCommentsByUserId();
@@ -8,12 +9,7 @@ export default async function CommentsPage() {
     <>
       {userComments.map((comment, index) => {
         return (
-          <a
-            href={`/${dashify(comment.post.title)}/${comment.postId}#${comment.id}`}
-            key={comment.id}
-          >
-            {comment.text}
-          </a>
+          <UserComment key={`user-comment-${comment.id}`} {...comment}/>
         );
       })}
     </>
