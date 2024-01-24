@@ -1,9 +1,15 @@
-import GitHub from "next-auth/providers/github"
-
-import type { NextAuthConfig } from "next-auth"
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
+import type { NextAuthConfig } from "next-auth";
 
 export default {
-  providers: [GitHub],
+  providers: [
+    GitHub,
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+  ],
   secret: process.env.AUTH_SECRET,
   callbacks: {
     jwt({ token, user }) {
@@ -39,5 +45,4 @@ export default {
       return true;
     },
   },
-} satisfies NextAuthConfig
-
+} satisfies NextAuthConfig;
