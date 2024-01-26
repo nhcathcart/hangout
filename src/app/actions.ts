@@ -2,6 +2,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/client";
 import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function checkAuth() {
   const session = await auth();
@@ -194,6 +195,7 @@ async function commentsByUserId() {
 type UserCommentswithAuthor = Prisma.PromiseReturnType<typeof commentsByUserId>;
 //actions that are called from the client -- these are
 export async function getAllPosts() {
+  revalidatePath("/")
   const res = await posts();
   return flattenResArray(res);
 }
