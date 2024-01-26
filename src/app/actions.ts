@@ -169,6 +169,7 @@ function flattenCommentsByUserArray(res: UserCommentswithAuthor) {
   }));
 }
 async function commentsByUserId() {
+  revalidatePath("/profile/comments")
   const session = await auth();
   const userid = session?.user?.id;
   if (!userid) throw new Error("Not logged in");
@@ -201,6 +202,7 @@ export async function getAllPosts() {
 }
 
 export async function getAllPostsByUser() {
+  revalidatePath("/profile")
   const session = await auth();
   const userid = session?.user?.id;
   const res = await prisma.post.findMany({
@@ -297,6 +299,7 @@ export interface NestedComment {
 export async function getCommentsRecursive(
   postId: number
 ): Promise<NestedComment[]> {
+  revalidatePath(`/posts/${postId}`)
   const flatComments = await prisma.$queryRaw<CommentResult[]>`
     WITH RECURSIVE CommentTree AS (
       SELECT
