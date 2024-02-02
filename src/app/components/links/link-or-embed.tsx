@@ -1,3 +1,4 @@
+import { InstagramBlock } from "./instagram-embed";
 import { LiChessBlock } from "./lichess-embed";
 import { YoutubeBlock } from "./youtube-embed";
 
@@ -19,7 +20,13 @@ export function LinkOrEmbed({ link }: { link: string }) {
                 <LiChessBlock liChessId={liChessId} />
             </div>
         )
-    // case 'www.instagram.com':
+    case 'www.instagram.com':
+      const instagramId = link.split("/")[4];
+      return (
+        <div>
+          <InstagramBlock instagramId={instagramId} />
+        </div>
+      )
     // case 'www.twitter.com':
     // case 'www.vimeo.com':
     default:
